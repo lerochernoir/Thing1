@@ -55,7 +55,7 @@ def _run_plain(session: AgentSession, task: str) -> None:
 
 
 def _run_tui(session: AgentSession, task: str) -> None:
-    with AgentTUI(session.client) as tui:
+    with AgentTUI(tokens_per_sec_fn=session.client.aggregate_tokens_per_sec) as tui:
 
         def on_event(kind: str, payload: object) -> None:
             if kind == "iteration_start":
@@ -81,6 +81,14 @@ def _run_tui(session: AgentSession, task: str) -> None:
     final = results[-1] if results else None
     if not (final and final.done):
         sys.exit(1)
+
+
+@main.command()
+def demo() -> None:
+    """Run the live TUI against simulated data — no GPU or model server required."""
+    from agentos.demo import run_demo
+
+    run_demo()
 
 
 @main.command()
