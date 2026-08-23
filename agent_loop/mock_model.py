@@ -7,7 +7,7 @@ from .core import AssistantMessage, ToolCall, UserMessage
 def scripted_model():
     step = {"n": 0}
 
-    def model(history) -> AssistantMessage:
+    def model(system_prompt, tools, history) -> AssistantMessage:
         step["n"] += 1
         n = step["n"]
 

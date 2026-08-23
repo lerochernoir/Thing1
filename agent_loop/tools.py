@@ -43,8 +43,55 @@ def _bash(args: dict) -> str:
 
 def build_tools() -> dict[str, Tool]:
     return {
-        "Read": Tool("Read", read_only=True, fn=_read, cost_usd=0.001),
-        "Grep": Tool("Grep", read_only=True, fn=_grep, cost_usd=0.0005),
-        "Write": Tool("Write", read_only=False, fn=_write, cost_usd=0.002),
-        "Bash": Tool("Bash", read_only=False, fn=_bash, cost_usd=0.003),
+        "Read": Tool(
+            "Read",
+            read_only=True,
+            fn=_read,
+            cost_usd=0.001,
+            description="Read the contents of a file at the given path.",
+            input_schema={
+                "type": "object",
+                "properties": {"path": {"type": "string", "description": "File path to read"}},
+                "required": ["path"],
+            },
+        ),
+        "Grep": Tool(
+            "Grep",
+            read_only=True,
+            fn=_grep,
+            cost_usd=0.0005,
+            description="Search file contents for a literal substring.",
+            input_schema={
+                "type": "object",
+                "properties": {"pattern": {"type": "string", "description": "Substring to search for"}},
+                "required": ["pattern"],
+            },
+        ),
+        "Write": Tool(
+            "Write",
+            read_only=False,
+            fn=_write,
+            cost_usd=0.002,
+            description="Write content to a file, replacing it if it already exists.",
+            input_schema={
+                "type": "object",
+                "properties": {
+                    "path": {"type": "string", "description": "File path to write"},
+                    "content": {"type": "string", "description": "New file content"},
+                },
+                "required": ["path", "content"],
+            },
+        ),
+        "Bash": Tool(
+            "Bash",
+            read_only=False,
+            fn=_bash,
+            cost_usd=0.003,
+            description="Run a shell command.",
+            input_schema={
+                "type": "object",
+                "properties": {"command": {"type": "string", "description": "Shell command to run"}},
+                "required": ["command"],
+            },
+        ),
     }

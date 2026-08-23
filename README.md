@@ -1,14 +1,49 @@
 # agent_loop
 
-A runnable demo of the agentic loop mechanics described in "The Loop Is Twelve
-Lines. Everything Else Is the Argument.": the loop itself is trivial, but
-turn accounting, tool scheduling, permission modes, hooks, and context/
-compaction are what actually determine behavior.
+A small, real library implementing the agentic loop mechanics described in
+"The Loop Is Twelve Lines. Everything Else Is the Argument.": the loop
+itself is trivial, but turn accounting, tool scheduling, permission modes,
+hooks, and context/compaction are what actually determine behavior.
 
-Run it:
+Building this out in phases — see the project plan for the full breakdown.
+**Phase 1 (real model wiring) is done**: `AnthropicModel` drives the loop
+against the real Claude Messages API.
+
+Install dependencies:
+
+```
+pip install -r requirements.txt
+```
+
+Run the scripted demo (no API key needed — uses a mock model):
 
 ```
 python3 -m agent_loop.demo
+```
+
+Run the test suite (mocks the Anthropic client, so no API key or network
+access is needed):
+
+```
+python3 -m pytest agent_loop/tests -v
+```
+
+To drive the loop against the real API instead of the mock, set
+`ANTHROPIC_API_KEY` and swap in `AnthropicModel`:
+
+```python
+from agent_loop.core import AgentLoop
+from agent_loop.anthropic_model import AnthropicModel
+from agent_loop.tools import build_tools
+
+tools = build_tools()
+loop = AgentLoop(
+    AnthropicModel(tools),
+    tools,
+    system_prompt="You are a coding agent.",
+    max_turns=10,
+)
+result = loop.run("Fix the failing tests in auth.ts")
 ```
 
 ## What it demonstrates
@@ -34,6 +69,19 @@ python3 -m agent_loop.demo
 - **`agent_loop/mock_model.py`** — a scripted "model" replaying the
   article's four-turn "fix the failing tests in `auth.ts`" walkthrough, so
   the demo runs with no API key.
+
+- **`agent_loop/anthropic_model.py`** — the real model wiring. Converts the
+  loop's tool definitions to the Anthropic Messages API's `input_schema`
+  format, flattens the loop's internal history into alternating
+  user/assistant messages (translating `tool_use` and `tool_result` blocks
+  both ways), and exposes `AnthropicModel` as a drop-in replacement for the
+  mock in `AgentLoop`.
+
+- **`agent_loop/tests/`** — `test_core.py` locks down the three demo
+  scenarios as regression tests; `test_anthropic_model.py` verifies the
+  Claude API adapter (schema conversion, history round-tripping, and a full
+  loop run) against a mocked client, so the suite needs no network access
+  or API key.
 
 - **`agent_loop/demo.py`** — three runs against the same task:
   1. `max_turns=10`: succeeds in 4 turns.

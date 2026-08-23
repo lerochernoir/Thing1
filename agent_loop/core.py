@@ -12,6 +12,7 @@ from typing import Callable
 class ToolCall:
     name: str
     args: dict
+    id: str | None = None  # set by real providers to match tool_result back to tool_use
 
 
 @dataclass
@@ -58,11 +59,21 @@ PERMISSION_MODES = ("default", "acceptEdits", "plan", "bypassPermissions")
 
 
 class Tool:
-    def __init__(self, name: str, read_only: bool, fn: Callable[[dict], str], cost_usd: float = 0.0):
+    def __init__(
+        self,
+        name: str,
+        read_only: bool,
+        fn: Callable[[dict], str],
+        cost_usd: float = 0.0,
+        description: str = "",
+        input_schema: dict | None = None,
+    ):
         self.name = name
         self.read_only = read_only
         self.fn = fn
         self.cost_usd = cost_usd
+        self.description = description or name
+        self.input_schema = input_schema or {"type": "object", "properties": {}}
 
 
 class AgentLoop:
@@ -191,7 +202,7 @@ class AgentLoop:
                 self._emit(result)
                 return result
 
-            response: AssistantMessage = self.model(self.history)
+            response: AssistantMessage = self.model(self.system_prompt, self.tools, self.history)
             self.history.append(response)
             self._emit(response)
 
