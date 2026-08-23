@@ -66,27 +66,35 @@ class AgentTUI:
         if self._live:
             self._live.update(self._render())
 
+    ACCENT = "#ff9d52"
+    ACCENT_DIM = "#c2410c"
+    WARN = "#e0c34a"
+
     def _render_log_panel(self) -> Panel:
         tail = self.log_lines[-40:]
         body = Text("\n".join(tail) or "(waiting for agent output)")
-        return Panel(body, title=f"{self.title} — {self.status}", border_style="cyan")
+        return Panel(body, title=f"{self.title} — {self.status}", border_style=self.WARN)
 
     def _render_gpu_panel(self) -> Panel:
         stats = self._gpu_stats_fn()
         tps = self._tokens_per_sec_fn()
 
-        header = Text(f"{tps:,.1f} tok/s aggregate\n", style="bold green")
+        header = Text(f"{tps:,.1f} tok/s aggregate\n", style=f"bold {self.ACCENT}")
         if not stats:
-            return Panel(Group(header, Text("nvidia-smi unavailable", style="dim")), title="GPUs", border_style="magenta")
+            return Panel(
+                Group(header, Text("nvidia-smi unavailable", style="dim")),
+                title="GPUs",
+                border_style=self.ACCENT_DIM,
+            )
 
         rows = [header]
         for s in stats:
             rows.append(self._gpu_row(s))
-        return Panel(Group(*rows), title="GPUs", border_style="magenta")
+        return Panel(Group(*rows), title="GPUs", border_style=self.ACCENT_DIM)
 
     def _gpu_row(self, s: GpuStat) -> Group:
-        util_bar = ProgressBar(total=100, completed=s.util_pct, width=20)
-        mem_bar = ProgressBar(total=100, completed=s.mem_pct, width=20)
+        util_bar = ProgressBar(total=100, completed=s.util_pct, width=20, complete_style=self.ACCENT, finished_style=self.ACCENT)
+        mem_bar = ProgressBar(total=100, completed=s.mem_pct, width=20, complete_style=self.ACCENT_DIM, finished_style=self.ACCENT_DIM)
         label = Text(f"GPU{s.index} {s.name}  {s.temp_c:.0f}C  {s.power_w:.0f}/{s.power_limit_w:.0f}W")
         table = Table.grid(padding=(0, 1))
         table.add_row(Text("util"), util_bar, Text(f"{s.util_pct:.0f}%"))
