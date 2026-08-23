@@ -1,8 +1,14 @@
-"""Rich-based terminal UI: build/agent log on the left, GPU panels on the right."""
+"""Rich-based terminal UI: build/agent log on the left, GPU panels on the right.
+
+Styled after a Bauhaus/Braun instrument panel: flat primary colors per
+module (blue = log, red = GPU), heavy high-contrast borders standing in
+for the checkerboard frames in the design reference, bold throughout.
+"""
 from __future__ import annotations
 
 from typing import Callable
 
+from rich import box
 from rich.console import Group
 from rich.layout import Layout
 from rich.live import Live
@@ -66,39 +72,45 @@ class AgentTUI:
         if self._live:
             self._live.update(self._render())
 
-    ACCENT = "#ff9d52"
-    ACCENT_DIM = "#c2410c"
-    WARN = "#e0c34a"
+    # Bauhaus/Braun primary triad — fixed, not theme-dependent.
+    RED = "#d1141e"
+    BLUE = "#1558a6"
+    YELLOW = "#f5c400"
 
     def _render_log_panel(self) -> Panel:
         tail = self.log_lines[-40:]
         body = Text("\n".join(tail) or "(waiting for agent output)")
-        return Panel(body, title=f"{self.title} — {self.status}", border_style=self.WARN)
+        title = Text(f" {self.title.upper()} — {self.status.upper()} ", style=f"bold white on {self.BLUE}")
+        return Panel(body, title=title, border_style=f"bold {self.BLUE}", box=box.HEAVY)
 
     def _render_gpu_panel(self) -> Panel:
         stats = self._gpu_stats_fn()
         tps = self._tokens_per_sec_fn()
 
-        header = Text(f"{tps:,.1f} tok/s aggregate\n", style=f"bold {self.ACCENT}")
+        header = Text(f" {tps:,.1f} TOK/S AGGREGATE \n", style=f"bold white on {self.RED}")
+        title = Text(" GPUS ", style=f"bold white on {self.RED}")
         if not stats:
             return Panel(
-                Group(header, Text("nvidia-smi unavailable", style="dim")),
-                title="GPUs",
-                border_style=self.ACCENT_DIM,
+                Group(header, Text("NVIDIA-SMI UNAVAILABLE", style="bold dim")),
+                title=title,
+                border_style=f"bold {self.RED}",
+                box=box.HEAVY,
             )
 
         rows = [header]
         for s in stats:
             rows.append(self._gpu_row(s))
-        return Panel(Group(*rows), title="GPUs", border_style=self.ACCENT_DIM)
+        return Panel(Group(*rows), title=title, border_style=f"bold {self.RED}", box=box.HEAVY)
 
     def _gpu_row(self, s: GpuStat) -> Group:
-        util_bar = ProgressBar(total=100, completed=s.util_pct, width=20, complete_style=self.ACCENT, finished_style=self.ACCENT)
-        mem_bar = ProgressBar(total=100, completed=s.mem_pct, width=20, complete_style=self.ACCENT_DIM, finished_style=self.ACCENT_DIM)
-        label = Text(f"GPU{s.index} {s.name}  {s.temp_c:.0f}C  {s.power_w:.0f}/{s.power_limit_w:.0f}W")
+        util_bar = ProgressBar(total=100, completed=s.util_pct, width=20, complete_style=self.RED, finished_style=self.RED)
+        mem_bar = ProgressBar(total=100, completed=s.mem_pct, width=20, complete_style=self.BLUE, finished_style=self.BLUE)
+        label = Text.from_markup(
+            f"[bold white on black] GPU{s.index} [/] [bold]{s.name}[/]  {s.temp_c:.0f}C  {s.power_w:.0f}/{s.power_limit_w:.0f}W"
+        )
         table = Table.grid(padding=(0, 1))
-        table.add_row(Text("util"), util_bar, Text(f"{s.util_pct:.0f}%"))
-        table.add_row(Text("mem "), mem_bar, Text(f"{s.mem_used_mib/1024:.1f}/{s.mem_total_mib/1024:.1f} GiB"))
+        table.add_row(Text("UTIL", style="bold"), util_bar, Text(f"{s.util_pct:.0f}%", style="bold"))
+        table.add_row(Text("MEM ", style="bold"), mem_bar, Text(f"{s.mem_used_mib/1024:.1f}/{s.mem_total_mib/1024:.1f} GiB", style="bold"))
         return Group(label, table)
 
     def _render(self):
