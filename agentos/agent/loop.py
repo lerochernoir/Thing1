@@ -37,6 +37,7 @@ class AgentSession:
     workspace: Workspace
     client: LLMClient
     on_event: Callable[[str, object], None] | None = None
+    system_prompt: str = SYSTEM_PROMPT
 
     def _emit(self, kind: str, payload: object) -> None:
         if self.on_event:
@@ -47,7 +48,7 @@ class AgentSession:
         files = self.workspace.read_many(seed_paths)
 
         messages = [
-            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "system", "content": self.system_prompt},
             {"role": "user", "content": TASK_TEMPLATE.format(task=task, files_block=render_files_block(files))},
         ]
 

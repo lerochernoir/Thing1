@@ -46,6 +46,21 @@ agentos run "add input validation to the login handler" --workdir /path/to/proje
 
 Use `--no-tui` for plain log output (useful in CI or when piping).
 
+### Your first agent: `lint-fix`
+
+`agentos run` needs a hand-written task and gives the model your whole
+seed-file list. `agentos lint-fix` is narrower and safer — it runs your
+lint/type-check command itself, turns the failure output directly into the
+task, and only shows the model the files the linter actually named:
+
+```bash
+agentos lint-fix --lint-cmd "ruff check ." --workdir /path/to/project
+```
+
+Success is exactly "the same command now exits 0" — there's no ambiguity
+about whether the agent's change actually worked. Iteration cap defaults to
+4 (vs. 8 for `run`) since the scope is intentionally small.
+
 Check GPU status on its own:
 
 ```bash
@@ -65,6 +80,7 @@ agentos/
   gpu/monitor.py     nvidia-smi based per-GPU stats
   agent/loop.py      the edit -> build -> verify orchestration
   agent/prompts.py   system/task prompt templates
+  agent/presets.py   lint-fix: narrow-scope agent driven by linter output
   ui/tui.py          Rich live TUI (log panel + GPU panel)
 ```
 
