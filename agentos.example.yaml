@@ -1,0 +1,19 @@
+# Copy to agentos.yaml and adjust for your setup.
+
+# One entry per local inference replica. Run an OpenAI-compatible server
+# (vLLM, llama.cpp server, TGI, etc.) per GPU and list each port here to
+# round-robin requests across all of them.
+endpoints:
+  - http://127.0.0.1:8000/v1
+  - http://127.0.0.1:8001/v1
+  - http://127.0.0.1:8002/v1
+  - http://127.0.0.1:8003/v1
+
+model: local-model
+api_key: not-needed
+
+workdir: .
+build_cmd: "pytest -q"
+max_iterations: 8
+max_tokens: 4096
+temperature: 0.2
