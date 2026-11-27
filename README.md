@@ -91,3 +91,11 @@ result = loop.run("Fix the failing tests in auth.ts")
      model still produces a no-tool-calls response claiming success —
      illustrating that the loop's only exit condition is silence, not
      verified completion.
+
+---
+
+## session_graph
+
+`session_graph/` turns one Claude Code session transcript into a knowledge graph
+in Relate and renders it as a radial SVG/PNG. See
+[`session_graph/README.md`](session_graph/README.md).
