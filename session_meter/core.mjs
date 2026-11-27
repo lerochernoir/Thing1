@@ -6,12 +6,14 @@ import os from "node:os";
 import path from "node:path";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import { fileURLToPath } from "node:url";
-import { drawSVG } from "../session_graph/render/draw.mjs";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const run = promisify(execFile);
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-export const GRAPH_DIR = path.resolve(HERE, "../session_graph");
+// Packaged app: session_graph is copied inside the bundle. Development: it sits next to this folder.
+export const GRAPH_DIR = fs.existsSync(path.join(HERE, "session_graph", "extract.py"))
+  ? path.join(HERE, "session_graph") : path.resolve(HERE, "../session_graph");
+const { drawSVG } = await import(pathToFileURL(path.join(GRAPH_DIR, "render", "draw.mjs")).href);
 export const PROJECTS = process.env.CLAUDE_PROJECTS_DIR || path.join(os.homedir(), ".claude", "projects");
 export const STATE_DIR = process.env.SESSION_METER_HOME || path.join(os.homedir(), ".session_graph");
 export const PYTHON = process.env.SESSION_METER_PYTHON || "python3";

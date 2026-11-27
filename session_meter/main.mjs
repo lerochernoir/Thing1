@@ -12,6 +12,9 @@ import { fileURLToPath } from "node:url";
 import * as core from "./core.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
+// Launched from Finder or at login, an app gets a bare PATH. Keep the system python3 first
+// (that is where `pip3 install --user relate-db` put Relate), then the usual Homebrew places.
+if (app.isPackaged) process.env.PATH = [process.env.PATH, "/usr/bin", "/opt/homebrew/bin", "/usr/local/bin"].filter(Boolean).join(":");
 const SETTINGS = path.join(core.STATE_DIR, "meter.json");
 const SIZE = { w: 340, h: 640, collapsedH: 64 };
 const MARGIN = 14;

@@ -7,9 +7,15 @@
   "main": "main.mjs",
   "scripts": {
     "start": "electron .",
-    "test": "node --test test/*.test.mjs"
+    "test": "node --test test/*.test.mjs",
+    "package": "node scripts/package-mac.mjs"
   },
   "devDependencies": {
-    "electron": "45.3.1"
-  }
+    "electron": "45.3.1",
+    "@electron/packager": "18.4.4"
+  },
+  "dependencies": {
+    "d3": "7.9.0"
+  },
+  "productName": "Session Meter"
 }

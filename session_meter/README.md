@@ -39,7 +39,29 @@ cd session_meter && npm ci                         # Electron 45.3.1
 npm start
 ```
 
-A ◉ appears in the menu bar, and the meter appears in the top-right corner.
+A ◉ appears in the menu bar, and the meter appears in the top-right corner. This way
+the Terminal has to stay open.
+
+## Install as a Mac app (no Terminal)
+
+```bash
+cd Thing1/session_meter
+npm run package
+open ~/Applications/"Session Meter.app"
+```
+
+`npm run package` builds **Session Meter.app** on your Mac and copies it to
+`~/Applications`. After that, open it like any app: from Spotlight (⌘Space, "Session
+Meter"), Launchpad or Finder. It has no Dock icon and lives in the menu bar (◉). To start
+it with your Mac, right-click ◉ → Open at login.
+
+Notes:
+
+- The app carries its own copy of the pipeline scripts. Re-run `npm run package` after a
+  `git pull` to pick up changes.
+- It still uses the Mac's `python3` with `relate-db` installed (the setup step above).
+- Quit it from the menu (right-click ◉ → Quit). If it is already running when you
+  rebuild, quit it first.
 
 ## Using it
 
