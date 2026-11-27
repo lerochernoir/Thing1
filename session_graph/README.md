@@ -12,7 +12,8 @@ hand-written test data, not model output.*
 ## Quick start
 
 ```bash
-pip install -r requirements.txt                # relate-db==1.3.0, anthropic, pytest
+pip install -r requirements.txt                # relate-db==1.3.0, pytest (Python 3.9+)
+pip install -r requirements-tag.txt            # optional, for tagging: anthropic (Python 3.10+)
 (cd render && npm ci)                          # d3 7.9.0, @resvg/resvg-js 2.6.2
 ./build.sh ~/.claude/projects/<slug>/<uuid>.jsonl          # full pipeline
 ./build.sh <session.jsonl> --no-tag                        # layer 1 only; nothing leaves the machine

@@ -29,11 +29,11 @@ Everything stays on your Mac. Nothing is sent anywhere.
 
 ## Setup (once)
 
-You need Node 20+ and Python 3.9+. Homebrew users: `brew install node python`.
+You need Node 20+ and Python 3.9+. The python3 that comes with macOS (3.9) is enough.
 
 ```bash
 git clone https://github.com/lerochernoir/Thing1 && cd Thing1
-pip3 install -r session_graph/requirements.txt     # relate-db 1.3.0 (+ anthropic for tagging)
+pip3 install -r session_graph/requirements.txt     # relate-db 1.3.0
 (cd session_graph/render && npm ci)                # d3 for the drawing
 cd session_meter && npm ci                         # Electron 45.3.1
 npm start
@@ -62,7 +62,8 @@ Settings are saved in `~/.session_graph/meter.json`. Environment overrides:
 ## Topics, decisions and open questions
 
 The meter shows layer 2 (topics, decisions, open questions) once the chat has been
-tagged. To tag a chat with Claude, set `ANTHROPIC_API_KEY` and run:
+tagged. To tag a chat with Claude, you need Python 3.10+ (`brew install python`). Run
+`pip3 install -r session_graph/requirements-tag.txt`, set `ANTHROPIC_API_KEY`, then run:
 
 ```bash
 python3 session_graph/tag.py ~/.session_graph/<uuid>/extract.json

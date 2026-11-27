@@ -1,0 +1,2 @@
+# Optional: layer-2 tagging (tag.py) only. Needs Python 3.10+ (e.g. `brew install python`).
+anthropic>=2.14    # output_config + server-side fallbacks
