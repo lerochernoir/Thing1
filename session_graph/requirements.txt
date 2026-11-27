@@ -1,0 +1,3 @@
+# Core pipeline + session_meter. Works on Python 3.9+ (incl. the Mac's built-in python3).
+relate-db==1.3.0   # Relate embedded engine (import relate); same engine as the `relate` 1.3.0 CLI
+pytest>=8

@@ -1,0 +1,28 @@
+{
+ "schema": "session-graph/tagged/v1",
+ "session_id": "5e55a0e0-0000-4000-8000-00000000f107",
+ "model": "fixture (hand-written for tests; not model output)",
+ "topics": [
+  {"slug": "graph-storage", "turn_indexes": [0, 1, 7, 8], "confidence": 0.9},
+  {"slug": "radial-layout", "turn_indexes": [2, 3, 4], "confidence": 0.9},
+  {"slug": "png-export", "turn_indexes": [5, 9], "confidence": 0.8},
+  {"slug": "documentation", "turn_indexes": [6, 9], "confidence": 0.8},
+  {"slug": "sqlite-export", "turn_indexes": [0, 9], "confidence": 0.7},
+  {"slug": "licensing", "turn_indexes": [1], "confidence": 0.6}
+ ],
+ "decisions": [
+  {"id": "D0", "text": "Use an embedded graph DB, not SQLite", "status": "accepted", "turn_index": 0, "supersedes": null, "defers": null, "topics": ["graph-storage"], "confidence": 0.9},
+  {"id": "D1", "text": "Pin relate-db 1.3.0", "status": "accepted", "turn_index": 1, "supersedes": null, "defers": null, "topics": ["graph-storage"], "confidence": 0.95},
+  {"id": "D2", "text": "Radial ring layout", "status": "accepted", "turn_index": 2, "supersedes": null, "defers": null, "topics": ["radial-layout"], "confidence": 0.9},
+  {"id": "D3", "text": "Pick the colour palette later", "status": "deferred", "turn_index": 2, "supersedes": null, "defers": "D2", "topics": ["radial-layout"], "confidence": 0.7},
+  {"id": "D4", "text": "Timeline layout", "status": "rejected", "turn_index": 4, "supersedes": null, "defers": null, "topics": ["radial-layout"], "confidence": 0.6},
+  {"id": "D5", "text": "Store the graph as a directory", "status": "accepted_by_default", "turn_index": 1, "supersedes": null, "defers": null, "topics": ["graph-storage"], "confidence": 0.6},
+  {"id": "D6", "text": "Single .rl file store instead of a directory", "status": "accepted", "turn_index": 8, "supersedes": "D5", "defers": null, "topics": ["graph-storage"], "confidence": 0.85},
+  {"id": "D7", "text": "Drop the SQLite export", "status": "accepted", "turn_index": 9, "supersedes": "D0", "defers": null, "topics": ["sqlite-export"], "confidence": 0.8}
+ ],
+ "questions": [
+  {"id": "Q1", "text": "SQLite or a graph DB?", "status": "resolved", "raised_in": 0, "resolved_in": 0, "confidence": 0.9},
+  {"id": "Q2", "text": "What is the license of the CLI binary?", "status": "open", "raised_in": 1, "resolved_in": null, "confidence": 0.85},
+  {"id": "Q3", "text": "Is resvg font handling OK on Linux?", "status": "resolved", "raised_in": 9, "resolved_in": 9, "confidence": 0.8}
+ ]
+}

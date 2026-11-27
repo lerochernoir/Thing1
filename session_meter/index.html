@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:">
+<title>Session meter</title>
+<style>
+:root{--ink:#eef1f5;--dim:#98a2ad;--faint:rgba(255,255,255,.08);--line:rgba(255,255,255,.12);--blue:#4c8dff;--pink:#ff6fae;--green:#3ecf8e;--amber:#ffc23c;--red:#ff5c5c;--orange:#ff9a3c}
+*{box-sizing:border-box;min-width:0;margin:0}
+html,body{height:100%;background:transparent;color:var(--ink);font:13px/1.35 -apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased;user-select:none;overflow:hidden}
+.panel{height:100%;display:flex;flex-direction:column;gap:10px;padding:10px 12px 10px;border-radius:16px;background:rgba(14,16,20,.78);border:1px solid var(--line);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.head{display:flex;align-items:center;gap:6px;-webkit-app-region:drag;min-height:40px}
+.lamp{width:9px;height:9px;border-radius:50%;background:#56606b;flex:none}
+.lamp.live{background:var(--green);box-shadow:0 0 0 0 rgba(62,207,142,.6);animation:pulse 1.6s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 7px rgba(62,207,142,0)}100%{box-shadow:0 0 0 0 rgba(62,207,142,0)}}
+@media(prefers-reduced-motion:reduce){.lamp.live{animation:none}#needle{transition:none!important}}
+.title{flex:1;font-weight:600;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btn{-webkit-app-region:no-drag;font:600 13px inherit;font-family:inherit;color:var(--ink);background:var(--faint);border:1px solid transparent;border-radius:7px;height:26px;min-width:26px;padding:0 7px;cursor:pointer}
+.btn:hover{background:rgba(255,255,255,.16)}
+.btn[aria-pressed=true]{background:var(--blue);color:#06101f}
+.mini-rpm{font-weight:700;font-variant-numeric:tabular-nums;font-size:15px;display:none}
+.picker{display:flex;gap:6px;align-items:center}
+select{-webkit-app-region:no-drag;flex:1;font:12px inherit;font-family:inherit;color:var(--ink);background:var(--faint);border:1px solid var(--line);border-radius:7px;height:26px;padding:0 6px}
+.proj{color:var(--dim);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tach{position:relative;height:172px}
+.tach svg{position:absolute;inset:0;width:100%;height:100%}
+#needle{transition:transform .8s cubic-bezier(.2,.8,.2,1)}
+.readout{position:absolute;left:0;right:0;bottom:0;text-align:center}
+.readout b{display:block;font-size:30px;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.readout span{color:var(--dim);font-size:11.5px}
+.dials{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.dial{background:var(--faint);border-radius:10px;padding:7px 4px 6px;text-align:center}
+.dial svg{width:44px;height:26px;display:block;margin:0 auto 2px}
+.dial b{display:block;font-size:15px;font-variant-numeric:tabular-nums}
+.dial span{color:var(--dim);font-size:10.5px}
+.spark{display:grid;grid-template-columns:repeat(30,minmax(0,1fr));align-items:end;gap:2px;height:30px}
+.spark i{display:block;background:var(--pink);border-radius:1px;min-height:1px;opacity:.85}
+.sparklab{display:flex;justify-content:space-between;color:var(--dim);font-size:10.5px;margin-top:2px}
+.ring{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+.ring svg{width:100%;height:100%;max-height:100%}
+.foot{display:flex;justify-content:space-between;gap:8px;color:var(--dim);font-size:11.5px}
+.foot .ok{color:var(--green)}.foot .err{color:var(--red)}
+.empty{color:var(--dim);text-align:center;padding:30px 10px}
+.body{display:flex;flex-direction:column;gap:10px;flex:1;min-height:0}
+body.collapsed .body{display:none}
+body.collapsed .mini-rpm{display:block}
+body.collapsed .panel{padding-block:8px}
+</style>
+</head>
+<body>
+<div class="panel">
+  <div class="head">
+    <span class="lamp" id="lamp" title="Green while the chat is active"></span>
+    <span class="title" id="title">Looking for Claude Code chats…</span>
+    <span class="mini-rpm" id="miniRpm"></span>
+    <button class="btn" id="older" title="Older chat">‹</button>
+    <button class="btn" id="newer" title="Newer chat">›</button>
+    <button class="btn" id="follow" aria-pressed="true" title="Follow the most recent chat">Live</button>
+    <button class="btn" id="collapse" title="Collapse">–</button>
+  </div>
+  <div class="body">
+    <div>
+      <div class="picker"><select id="pick" aria-label="Chat"></select></div>
+      <div class="proj" id="proj"></div>
+    </div>
+    <div class="tach">
+      <svg id="tach" viewBox="0 0 300 172" aria-hidden="true"></svg>
+      <div class="readout"><b id="rpm">–</b><span>tool calls / min · last 5 min</span></div>
+    </div>
+    <div class="dials">
+      <div class="dial"><svg id="dErr" viewBox="0 0 44 26"></svg><b id="vErr">–</b><span>errors</span></div>
+      <div class="dial"><svg id="dTurn" viewBox="0 0 44 26"></svg><b id="vTurn">–</b><span>turns</span></div>
+      <div class="dial"><svg id="dFile" viewBox="0 0 44 26"></svg><b id="vFile">–</b><span>files</span></div>
+      <div class="dial"><svg id="dQ" viewBox="0 0 44 26"></svg><b id="vQ">–</b><span>open Qs</span></div>
+    </div>
+    <div>
+      <div class="spark" id="spark"></div>
+      <div class="sparklab"><span>30 min ago</span><span id="calls"></span><span>now</span></div>
+    </div>
+    <div class="ring" id="ring"><div class="empty">The ring graph appears once a chat is read.</div></div>
+    <div class="foot"><span id="now">–</span><span id="sync"></span></div>
+  </div>
+</div>
+<script src="ui.js"></script>
+</body>
+</html>
