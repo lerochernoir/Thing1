@@ -1,0 +1,15 @@
+{
+  "name": "session-meter",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Always-on-top corner widget: the current Claude Code chat as an engine meter and ring graph",
+  "type": "module",
+  "main": "main.mjs",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test test/*.test.mjs"
+  },
+  "devDependencies": {
+    "electron": "45.3.1"
+  }
+}

@@ -99,3 +99,9 @@ result = loop.run("Fix the failing tests in auth.ts")
 `session_graph/` turns one Claude Code session transcript into a knowledge graph
 in Relate and renders it as a radial SVG/PNG. See
 [`session_graph/README.md`](session_graph/README.md).
+
+## session_meter
+
+`session_meter/` is a Mac menu-bar widget. It pins a small always-on-top window to a
+screen corner and shows the current Claude Code chat as an engine meter and ring graph.
+See [`session_meter/README.md`](session_meter/README.md).
