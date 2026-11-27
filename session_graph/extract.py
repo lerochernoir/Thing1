@@ -221,6 +221,12 @@ class Extractor:
             return
         if self._maybe_peer(e, text):
             return
+        origin = e.get("origin")
+        if isinstance(origin, dict) and origin.get("kind") not in (None, "human"):
+            # Harness-injected input (PR alerts, scheduled check-ins, ...): neither
+            # typed by the user nor returned by a subagent.
+            warn(f"system-origin input ({origin.get('kind')}) is not a turn; skipped")
+            return
         self._add_turn(e, "human", text, source="user")
 
     def _attachment(self, e: dict) -> None:

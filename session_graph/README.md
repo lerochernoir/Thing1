@@ -49,7 +49,9 @@ stderr once each and skipped.
 - **Human turn**: a main-thread `user` entry with typed text. It is not
   `isMeta`, not a `tool_result`, and not a peer delivery. A `queued_command`
   attachment with plain text also counts, because that is the user typing
-  while Claude was busy. `<system-reminder>` blocks are stripped.
+  while Claude was busy. `<system-reminder>` blocks are stripped. Input whose
+  `origin.kind` is anything other than `human`, such as a PR alert or a
+  scheduled check-in, is not a turn unless it is a subagent delivery.
 - **Peer-agent turn**: a subagent result coming back. This is an
   `<agent-message from=…>` hand-back, a `<task-notification>`, or an
   Agent/Task `tool_result` carrying an `agentId`. There is one turn per agent

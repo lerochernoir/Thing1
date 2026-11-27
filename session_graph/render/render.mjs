@@ -165,7 +165,8 @@ for (const t of toolItems) {
   const r = toolR(t.calls);
   layer.top.push(`<circle cx="${f1(x)}" cy="${f1(y)}" r="${f1(r)}" fill="${C.tool}"><title>${esc(t.name)}: ${t.calls} calls</title></circle>`);
   const lx = x + Math.cos(t.a) * 0, ly = y + r + 13;
-  layer.labels.push(`<text x="${f1(lx)}" y="${f1(ly)}" font-size="11" font-weight="600" text-anchor="middle" fill="${C.tool}">${esc(t.name)} ${t.calls}</text>`);
+  const short = t.name.startsWith("mcp__") ? t.name.split("__").pop() : t.name; // mcp__server__tool -> tool
+  layer.labels.push(`<text x="${f1(lx)}" y="${f1(ly)}" font-size="11" font-weight="600" text-anchor="middle" fill="${C.tool}">${esc(short)} ${t.calls}</text>`);
 }
 
 const MAX_FILES = 28;

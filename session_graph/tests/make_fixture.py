@@ -128,6 +128,8 @@ call("Skill", {"skill": "docs", "args": "update README"})
 call("Read", {"file_path": "/work/app/README.md"})
 main.append({"type": "user", "isMeta": True, "uuid": uid(), "timestamp": ts(),
              "message": {"role": "user", "content": "<command-name>/clear</command-name>"}})
+main.append({"type": "user", "uuid": uid(), "timestamp": ts(), "origin": {"kind": "task-notification"},
+             "message": {"role": "user", "content": "<task-notification>\n<task-type>queued-remote-notifications</task-type>\n<status>pending</status>\n</task-notification>"}})  # system alert: not a turn
 human("Ship it.")
 say("Done.")
 

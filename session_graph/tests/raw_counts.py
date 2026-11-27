@@ -65,11 +65,12 @@ def count(session_path):
             if d.get("type") == "user" and not d.get("isMeta") \
                     and not any(isinstance(b, dict) and b.get("type") == "tool_result" for b in blocks):
                 t = _text(content)
+                kind = (d.get("origin") or {}).get("kind") if isinstance(d.get("origin"), dict) else None
                 if t:
                     m = PEER.search(t)
                     if m:
                         peers.add(m.group(1) or m.group(2).strip())
-                    else:
+                    elif kind in (None, "human"):
                         human += 1
             if d.get("type") == "attachment" and isinstance(d.get("attachment"), dict) \
                     and d["attachment"].get("type") == "queued_command":
